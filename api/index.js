@@ -3,19 +3,15 @@ const path = require("path");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
+const connectDB = require("../db"); // Import database connection
 
 const app = express();
 app.use(cors());
 app.use(express.json()); // Middleware to parse JSON body
 app.use(express.urlencoded({ extended: true })); // Middleware to parse form data
 
-// MongoDB Connection
-const mongoURI = process.env.MONGO_URI;
-
-mongoose
-  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ MongoDB connected successfully"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// Connect to MongoDB
+connectDB();
 
 // User Schema & Model
 const userSchema = new mongoose.Schema({
@@ -136,10 +132,10 @@ app.get("/api/users/:_id/logs", async (req, res) => {
 });
 
 // Serve static files from the public directory
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "index.html"));
+  res.sendFile(path.join(__dirname, "../views", "index.html"));
 });
 
 // ✅ Check MongoDB connection status
