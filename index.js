@@ -1,26 +1,21 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const path = require("path");
 const cors = require("cors");
 require("dotenv").config();
+require("./db");
 
 const app = express();
+
 app.use(cors());
-app.use(express.json()); // For handling JSON requests
 
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI;
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, "public")));
 
-// MongoDB Connection
-mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ MongoDB connected successfully"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-// Test Route
 app.get("/", (req, res) => {
-  res.send("🚀 Server is running and connected to MongoDB!");
+  res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 
-app.listen(PORT, () => {
-  console.log(`⚡ Server running on port ${PORT}`);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Your app is listening on port ${port}`);
 });
