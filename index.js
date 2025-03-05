@@ -1,41 +1,26 @@
 const express = require("express");
-const path = require("path");
-const cors = require("cors");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-
 app.use(cors());
+app.use(express.json()); // For handling JSON requests
 
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, "public")));
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
 
-// Connect to MongoDB Atlas
+// MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Root route
+// Test Route
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "index.html"));
+  res.send("🚀 Server is running and connected to MongoDB!");
 });
 
-// Test MongoDB Connection
-app.get("/test-db", async (req, res) => {
-  try {
-    await mongoose.connection.db.admin().ping();
-    res.json({ message: "✅ MongoDB is connected!" });
-  } catch (error) {
-    res.status(500).json({ message: "❌ MongoDB connection failed", error });
-  }
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`🚀 Your app is listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`⚡ Server running on port ${PORT}`);
 });
